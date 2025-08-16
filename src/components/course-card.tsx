@@ -1,4 +1,5 @@
 import { Star, Clock, Users, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -40,7 +41,8 @@ export const CourseCard = ({
   };
 
   return (
-    <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 bg-gradient-to-br from-card to-accent/30">
+    <Link to={`/course/${id}`}>
+      <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 bg-gradient-to-br from-card to-accent/30">
       <CardHeader className="p-0">
         <div className="relative overflow-hidden rounded-t-lg">
           <img
@@ -112,5 +114,6 @@ export const CourseCard = ({
         </Button>
       </CardFooter>
     </Card>
+    </Link>
   );
 };
