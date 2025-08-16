@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import Index from "./pages/index";
 import Courses from "./pages/courses";
 import CourseDetail from "./pages/course-detail";
+import CourseLearning from "./pages/course-learning";
 import Dashboard from "./pages/dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/course/:courseId" element={<CourseDetail />} />
+            <Route path="/course/:courseId/learn" element={<CourseLearning />} />
+            <Route path="/course/:courseId/learn/:lessonId" element={<CourseLearning />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

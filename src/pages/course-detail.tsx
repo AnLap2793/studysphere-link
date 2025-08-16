@@ -217,9 +217,11 @@ export default function CourseDetail() {
                   )}
                   
                   <div className="space-y-3">
-                    <Button className="w-full" size="lg">
-                      {course.enrolled ? "Continue Learning" : "Enroll Now"}
-                    </Button>
+                    <Link to={`/course/${course.id}/learn`}>
+                      <Button className="w-full" size="lg">
+                        {course.enrolled ? "Continue Learning" : "Enroll Now"}
+                      </Button>
+                    </Link>
                     
                     {course.enrolled && (
                       <>
@@ -330,9 +332,11 @@ export default function CourseDetail() {
                       </div>
                       
                       {course.enrolled && (
-                        <Button variant="ghost" size="sm">
-                          {lesson.completed ? "Review" : "Start"}
-                        </Button>
+                        <Link to={`/course/${course.id}/learn/${lesson.id}`}>
+                          <Button variant="ghost" size="sm">
+                            {lesson.completed ? "Review" : "Start"}
+                          </Button>
+                        </Link>
                       )}
                     </div>
                   ))}
