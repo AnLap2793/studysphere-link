@@ -11,6 +11,7 @@ import CourseDetail from "./pages/course-detail";
 import CourseLearning from "./pages/course-learning";
 import Dashboard from "./pages/dashboard";
 import MyLearning from "./pages/my-learning";
+import Profile from "./pages/profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/course/:courseId/learn/:lessonId" element={<CourseLearning />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/my-learning" element={<MyLearning />} />
+              <Route path="/profile" element={<Profile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

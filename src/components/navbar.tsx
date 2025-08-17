@@ -104,9 +104,11 @@ export const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                   <DropdownMenuItem>Billing</DropdownMenuItem>
@@ -169,9 +171,11 @@ export const Navbar = () => {
             <div className="pt-4 border-t grid gap-2">
               {user ? (
                 <>
-                  <Button variant="ghost" className="justify-start" size="sm">
-                    <User className="w-4 h-4 mr-2" />
-                    Profile
+                  <Button variant="ghost" className="justify-start" size="sm" asChild>
+                    <Link to="/profile">
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </Link>
                   </Button>
                   <Button variant="ghost" className="justify-start" size="sm">
                     <Bell className="w-4 h-4 mr-2" />
