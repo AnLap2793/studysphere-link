@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { BookOpen, Search, Menu, X, User, Bell } from "lucide-react";
+import { BookOpen, Search, Menu, X, User, Bell, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,10 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/auth-context";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { useToast } from "@/hooks/use-toast";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -23,6 +29,22 @@ export const Navbar = () => {
     { label: "Dashboard", href: "/dashboard" },
     { label: "My Learning", href: "/my-learning" },
   ];
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Lỗi đăng xuất",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Đăng xuất thành công",
+        description: "Hẹn gặp lại bạn!",
+      });
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -64,29 +86,44 @@ export const Navbar = () => {
             </Link>
           ))}
 
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="w-5 h-5" />
-            <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground">
-              3
-            </Badge>
-          </Button>
-
-          {/* User Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="w-5 h-5" />
+          {user ? (
+            <>
+              {/* Notifications */}
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="w-5 h-5" />
+                <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground">
+                  3
+                </Badge>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Sign out</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+              {/* User Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Button onClick={() => setIsAuthModalOpen(true)} variant="default">
+              <LogIn className="mr-2 h-4 w-4" />
+              Đăng nhập
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -130,19 +167,34 @@ export const Navbar = () => {
 
             {/* Mobile User Actions */}
             <div className="pt-4 border-t grid gap-2">
-              <Button variant="ghost" className="justify-start" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </Button>
-              <Button variant="ghost" className="justify-start" size="sm">
-                <Bell className="w-4 h-4 mr-2" />
-                Notifications
-                <Badge className="ml-auto">3</Badge>
-              </Button>
+              {user ? (
+                <>
+                  <Button variant="ghost" className="justify-start" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </Button>
+                  <Button variant="ghost" className="justify-start" size="sm">
+                    <Bell className="w-4 h-4 mr-2" />
+                    Notifications
+                    <Badge className="ml-auto">3</Badge>
+                  </Button>
+                  <Button variant="ghost" className="justify-start" size="sm" onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Đăng xuất
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setIsAuthModalOpen(true)} className="justify-start" size="sm">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Đăng nhập
+                </Button>
+              )}
             </div>
           </div>
         </div>
       )}
+
+      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
     </nav>
   );
 };
