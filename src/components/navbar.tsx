@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 import { useToast } from "@/hooks/use-toast";
 
 export const Navbar = () => {
@@ -27,7 +28,6 @@ export const Navbar = () => {
   const navItems = [
     { label: "Courses", href: "/courses" },
     { label: "Dashboard", href: "/dashboard" },
-    { label: "My Learning", href: "/my-learning" },
   ];
 
   const handleSignOut = async () => {
@@ -89,12 +89,7 @@ export const Navbar = () => {
           {user ? (
             <>
               {/* Notifications */}
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center bg-destructive text-destructive-foreground">
-                  3
-                </Badge>
-              </Button>
+              <NotificationDropdown />
 
               {/* User Menu */}
               <DropdownMenu>
