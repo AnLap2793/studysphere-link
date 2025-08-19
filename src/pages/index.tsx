@@ -89,7 +89,7 @@ const benefits = [
   "Expert instructor support",
 ];
 
-export default function Index() {
+const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -347,4 +347,6 @@ export default function Index() {
       </section>
     </div>
   );
-}
+};
+
+export default Index;
