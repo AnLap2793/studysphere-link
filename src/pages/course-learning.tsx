@@ -10,7 +10,8 @@ import {
   ArrowLeft,
   Settings,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -91,6 +92,37 @@ const mockCourseData = {
     },
     {
       id: 6,
+      title: "JavaScript Quiz",
+      duration: "20 min",
+      completed: false,
+      type: "quiz",
+      description: "Test your JavaScript knowledge with this interactive quiz.",
+      quiz: {
+        questions: [
+          {
+            id: 1,
+            question: "What is the correct way to declare a variable in JavaScript?",
+            options: ["var myVar;", "variable myVar;", "v myVar;", "declare myVar;"],
+            correctAnswer: 0
+          },
+          {
+            id: 2,
+            question: "Which method is used to add an element to the end of an array?",
+            options: ["append()", "push()", "add()", "insert()"],
+            correctAnswer: 1
+          },
+          {
+            id: 3,
+            question: "What does 'DOM' stand for?",
+            options: ["Document Object Model", "Data Object Management", "Dynamic Object Method", "Document Oriented Model"],
+            correctAnswer: 0
+          }
+        ]
+      },
+      resources: []
+    },
+    {
+      id: 7,
       title: "Project: Todo App",
       duration: "120 min",
       completed: false,
@@ -111,6 +143,8 @@ export default function CourseLearning() {
   );
   const [notes, setNotes] = useState("");
   const [expandedSections, setExpandedSections] = useState<number[]>([1]);
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   const course = mockCourseData;
   const currentLesson = course.lessons.find(lesson => lesson.id === currentLessonId);
@@ -193,6 +227,14 @@ export default function CourseLearning() {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                     />
+                  ) : currentLesson.type === "quiz" ? (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center text-white">
+                        <Brain className="w-16 h-16 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">Knowledge Quiz</h3>
+                        <p className="text-white/80">Test your understanding with interactive questions</p>
+                      </div>
+                    </div>
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center text-white">
@@ -245,6 +287,7 @@ export default function CourseLearning() {
           <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
+              {currentLesson.type === "quiz" && <TabsTrigger value="quiz">Quiz</TabsTrigger>}
               <TabsTrigger value="notes">My Notes</TabsTrigger>
               <TabsTrigger value="resources">Resources</TabsTrigger>
               <TabsTrigger value="qa">Q&A</TabsTrigger>
@@ -268,6 +311,98 @@ export default function CourseLearning() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {currentLesson.type === "quiz" && currentLesson.quiz && (
+              <TabsContent value="quiz">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quiz Questions</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      {currentLesson.quiz.questions.map((question, questionIndex) => (
+                        <div key={question.id} className="p-4 border rounded-lg">
+                          <h4 className="font-medium mb-3">
+                            {questionIndex + 1}. {question.question}
+                          </h4>
+                          <div className="space-y-2">
+                            {question.options.map((option, optionIndex) => (
+                              <label
+                                key={optionIndex}
+                                className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                                  selectedAnswers[question.id] === optionIndex
+                                    ? quizSubmitted
+                                      ? optionIndex === question.correctAnswer
+                                        ? 'bg-green-50 border-green-200 text-green-700'
+                                        : 'bg-red-50 border-red-200 text-red-700'
+                                      : 'bg-primary/10 border-primary/20'
+                                    : quizSubmitted && optionIndex === question.correctAnswer
+                                    ? 'bg-green-50 border-green-200 text-green-700'
+                                    : 'hover:bg-accent'
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`question-${question.id}`}
+                                  value={optionIndex}
+                                  checked={selectedAnswers[question.id] === optionIndex}
+                                  onChange={(e) => {
+                                    if (!quizSubmitted) {
+                                      setSelectedAnswers(prev => ({
+                                        ...prev,
+                                        [question.id]: parseInt(e.target.value)
+                                      }));
+                                    }
+                                  }}
+                                  disabled={quizSubmitted}
+                                  className="mr-3"
+                                />
+                                <span>{option}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div className="flex items-center justify-between pt-4 border-t">
+                        {!quizSubmitted ? (
+                          <Button
+                            onClick={() => setQuizSubmitted(true)}
+                            disabled={Object.keys(selectedAnswers).length !== currentLesson.quiz!.questions.length}
+                            className="w-full"
+                          >
+                            Submit Quiz
+                          </Button>
+                        ) : (
+                          <div className="w-full">
+                            <div className="text-center mb-4">
+                              <p className="text-lg font-medium">
+                                Quiz Results: {
+                                  Object.entries(selectedAnswers).filter(([questionId, answer]) => {
+                                    const question = currentLesson.quiz!.questions.find(q => q.id === parseInt(questionId));
+                                    return question && question.correctAnswer === answer;
+                                  }).length
+                                } / {currentLesson.quiz!.questions.length} correct
+                              </p>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                setSelectedAnswers({});
+                                setQuizSubmitted(false);
+                              }}
+                              variant="outline"
+                              className="w-full"
+                            >
+                              Retake Quiz
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            )}
             
             <TabsContent value="notes">
               <Card>
