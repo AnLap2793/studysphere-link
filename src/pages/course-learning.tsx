@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -101,21 +102,35 @@ const mockCourseData = {
         questions: [
           {
             id: 1,
+            type: "multiple_choice",
             question: "What is the correct way to declare a variable in JavaScript?",
             options: ["var myVar;", "variable myVar;", "v myVar;", "declare myVar;"],
             correctAnswer: 0
           },
           {
             id: 2,
+            type: "multiple_choice",
             question: "Which method is used to add an element to the end of an array?",
             options: ["append()", "push()", "add()", "insert()"],
             correctAnswer: 1
           },
           {
             id: 3,
-            question: "What does 'DOM' stand for?",
-            options: ["Document Object Model", "Data Object Management", "Dynamic Object Method", "Document Oriented Model"],
-            correctAnswer: 0
+            type: "true_false",
+            question: "JavaScript is a compiled programming language.",
+            correctAnswer: false
+          },
+          {
+            id: 4,
+            type: "short_answer",
+            question: "What does 'DOM' stand for? (Write the full form)",
+            correctAnswer: "Document Object Model"
+          },
+          {
+            id: 5,
+            type: "true_false",
+            question: "Variables declared with 'let' can be redeclared in the same scope.",
+            correctAnswer: false
           }
         ]
       },
@@ -143,7 +158,7 @@ export default function CourseLearning() {
   );
   const [notes, setNotes] = useState("");
   const [expandedSections, setExpandedSections] = useState<number[]>([1]);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: any }>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   const course = mockCourseData;
@@ -325,42 +340,119 @@ export default function CourseLearning() {
                           <h4 className="font-medium mb-3">
                             {questionIndex + 1}. {question.question}
                           </h4>
-                          <div className="space-y-2">
-                            {question.options.map((option, optionIndex) => (
-                              <label
-                                key={optionIndex}
-                                className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                                  selectedAnswers[question.id] === optionIndex
-                                    ? quizSubmitted
-                                      ? optionIndex === question.correctAnswer
-                                        ? 'bg-green-50 border-green-200 text-green-700'
-                                        : 'bg-red-50 border-red-200 text-red-700'
-                                      : 'bg-primary/10 border-primary/20'
-                                    : quizSubmitted && optionIndex === question.correctAnswer
-                                    ? 'bg-green-50 border-green-200 text-green-700'
-                                    : 'hover:bg-accent'
+                          
+                          {/* Multiple Choice Questions */}
+                          {question.type === "multiple_choice" && question.options && (
+                            <div className="space-y-2">
+                              {question.options.map((option, optionIndex) => (
+                                <label
+                                  key={optionIndex}
+                                  className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                                    selectedAnswers[question.id] === optionIndex
+                                      ? quizSubmitted
+                                        ? optionIndex === question.correctAnswer
+                                          ? 'bg-green-50 border-green-200 text-green-700'
+                                          : 'bg-red-50 border-red-200 text-red-700'
+                                        : 'bg-primary/10 border-primary/20'
+                                      : quizSubmitted && optionIndex === question.correctAnswer
+                                      ? 'bg-green-50 border-green-200 text-green-700'
+                                      : 'hover:bg-accent'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`question-${question.id}`}
+                                    value={optionIndex}
+                                    checked={selectedAnswers[question.id] === optionIndex}
+                                    onChange={(e) => {
+                                      if (!quizSubmitted) {
+                                        setSelectedAnswers(prev => ({
+                                          ...prev,
+                                          [question.id]: parseInt(e.target.value)
+                                        }));
+                                      }
+                                    }}
+                                    disabled={quizSubmitted}
+                                    className="mr-3"
+                                  />
+                                  <span>{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* True/False Questions */}
+                          {question.type === "true_false" && (
+                            <div className="space-y-2">
+                              {[true, false].map((value) => (
+                                <label
+                                  key={value.toString()}
+                                  className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                                    selectedAnswers[question.id] === value
+                                      ? quizSubmitted
+                                        ? value === question.correctAnswer
+                                          ? 'bg-green-50 border-green-200 text-green-700'
+                                          : 'bg-red-50 border-red-200 text-red-700'
+                                        : 'bg-primary/10 border-primary/20'
+                                      : quizSubmitted && value === question.correctAnswer
+                                      ? 'bg-green-50 border-green-200 text-green-700'
+                                      : 'hover:bg-accent'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name={`question-${question.id}`}
+                                    value={value.toString()}
+                                    checked={selectedAnswers[question.id] === value}
+                                    onChange={() => {
+                                      if (!quizSubmitted) {
+                                        setSelectedAnswers(prev => ({
+                                          ...prev,
+                                          [question.id]: value
+                                        }));
+                                      }
+                                    }}
+                                    disabled={quizSubmitted}
+                                    className="mr-3"
+                                  />
+                                  <span>{value ? "True" : "False"}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Short Answer Questions */}
+                          {question.type === "short_answer" && (
+                            <div className="space-y-2">
+                              <Input
+                                placeholder="Type your answer here..."
+                                value={selectedAnswers[question.id] || ""}
+                                onChange={(e) => {
+                                  if (!quizSubmitted) {
+                                    setSelectedAnswers(prev => ({
+                                      ...prev,
+                                      [question.id]: e.target.value
+                                    }));
+                                  }
+                                }}
+                                disabled={quizSubmitted}
+                                className={`${
+                                  quizSubmitted
+                                    ? typeof selectedAnswers[question.id] === 'string' && 
+                                      typeof question.correctAnswer === 'string' &&
+                                      selectedAnswers[question.id]?.toLowerCase().trim() === question.correctAnswer?.toLowerCase().trim()
+                                      ? 'bg-green-50 border-green-200 text-green-700'
+                                      : 'bg-red-50 border-red-200 text-red-700'
+                                    : ''
                                 }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name={`question-${question.id}`}
-                                  value={optionIndex}
-                                  checked={selectedAnswers[question.id] === optionIndex}
-                                  onChange={(e) => {
-                                    if (!quizSubmitted) {
-                                      setSelectedAnswers(prev => ({
-                                        ...prev,
-                                        [question.id]: parseInt(e.target.value)
-                                      }));
-                                    }
-                                  }}
-                                  disabled={quizSubmitted}
-                                  className="mr-3"
-                                />
-                                <span>{option}</span>
-                              </label>
-                            ))}
-                          </div>
+                              />
+                              {quizSubmitted && (
+                                <p className="text-sm text-muted-foreground">
+                                  Correct answer: {question.correctAnswer}
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                       
@@ -380,7 +472,18 @@ export default function CourseLearning() {
                                 Quiz Results: {
                                   Object.entries(selectedAnswers).filter(([questionId, answer]) => {
                                     const question = currentLesson.quiz!.questions.find(q => q.id === parseInt(questionId));
-                                    return question && question.correctAnswer === answer;
+                                    if (!question) return false;
+                                    
+                                    if (question.type === "multiple_choice") {
+                                      return question.correctAnswer === answer;
+                                    } else if (question.type === "true_false") {
+                                      return question.correctAnswer === answer;
+                                     } else if (question.type === "short_answer") {
+                                       return typeof answer === 'string' && 
+                                              typeof question.correctAnswer === 'string' &&
+                                              answer?.toLowerCase().trim() === question.correctAnswer?.toLowerCase().trim();
+                                     }
+                                    return false;
                                   }).length
                                 } / {currentLesson.quiz!.questions.length} correct
                               </p>
