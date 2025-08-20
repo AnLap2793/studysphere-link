@@ -2,11 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   Play, 
-  Pause,
-  SkipBack,
-  SkipForward,
-  Volume2,
-  Maximize,
   CheckCircle,
   Clock,
   BookOpen,
@@ -23,7 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 // Import course images
@@ -40,7 +34,7 @@ const mockCourseData = {
       duration: "15 min",
       completed: true,
       type: "video",
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      videoUrl: "https://www.youtube.com/embed/UB1O30fR-EE",
       description: "Welcome to the course! In this lesson, we'll overview what web development is and what you'll learn.",
       resources: [
         { name: "Course Slides", type: "pdf", url: "#" },
@@ -53,7 +47,7 @@ const mockCourseData = {
       duration: "45 min",
       completed: true,
       type: "video",
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      videoUrl: "https://www.youtube.com/embed/qz0aGYrrlhU",
       description: "Learn the fundamentals of HTML including tags, elements, and document structure.",
       resources: [
         { name: "HTML Reference", type: "pdf", url: "#" },
@@ -66,7 +60,7 @@ const mockCourseData = {
       duration: "60 min",
       completed: true,
       type: "video",
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      videoUrl: "https://www.youtube.com/embed/1Rs2ND1ryYc",
       description: "Master CSS styling, selectors, properties, and responsive design principles.",
       resources: [
         { name: "CSS Cheat Sheet", type: "pdf", url: "#" }
@@ -78,7 +72,7 @@ const mockCourseData = {
       duration: "90 min",
       completed: false,
       type: "video",
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      videoUrl: "https://www.youtube.com/embed/PkZNo7MFNFg",
       description: "Dive into JavaScript programming with variables, functions, and basic concepts.",
       resources: [
         { name: "JavaScript Guide", type: "pdf", url: "#" },
@@ -91,7 +85,7 @@ const mockCourseData = {
       duration: "75 min",
       completed: false,
       type: "video",
-      videoUrl: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4",
+      videoUrl: "https://www.youtube.com/embed/0ik6X4DJKCc",
       description: "Learn how to interact with web pages using JavaScript DOM manipulation.",
       resources: []
     },
@@ -115,9 +109,6 @@ export default function CourseLearning() {
   const [currentLessonId, setCurrentLessonId] = useState<number>(
     lessonId ? parseInt(lessonId) : 1
   );
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState([80]);
   const [notes, setNotes] = useState("");
   const [expandedSections, setExpandedSections] = useState<number[]>([1]);
 
@@ -194,71 +185,14 @@ export default function CourseLearning() {
               <CardContent className="p-0">
                 <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
                   {currentLesson.type === "video" ? (
-                    <>
-                      <video 
-                        className="w-full h-full object-cover"
-                        poster={courseProgImg}
-                        controls={false}
-                      >
-                        <source src={currentLesson.videoUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                      
-                      {/* Custom Video Controls */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                        <div className="flex items-center gap-4">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-white hover:bg-white/20"
-                            onClick={() => setIsPlaying(!isPlaying)}
-                          >
-                            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-white hover:bg-white/20"
-                            onClick={handlePreviousLesson}
-                          >
-                            <SkipBack className="w-4 h-4" />
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-white hover:bg-white/20"
-                            onClick={handleNextLesson}
-                          >
-                            <SkipForward className="w-4 h-4" />
-                          </Button>
-                          
-                          <div className="flex-1">
-                            <Progress value={progress} className="h-2" />
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <Volume2 className="w-4 h-4 text-white" />
-                            <Slider
-                              value={volume}
-                              onValueChange={setVolume}
-                              max={100}
-                              step={1}
-                              className="w-20"
-                            />
-                          </div>
-                          
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-white hover:bg-white/20"
-                          >
-                            <Maximize className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </>
+                    <iframe
+                      className="w-full h-full"
+                      src={currentLesson.videoUrl}
+                      title={currentLesson.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center text-white">
