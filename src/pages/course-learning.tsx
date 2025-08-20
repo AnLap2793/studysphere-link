@@ -228,41 +228,35 @@ export default function CourseLearning() {
       <div className="flex max-w-7xl mx-auto">
         {/* Main Content */}
         <div className="flex-1 p-6">
-          {/* Video Player */}
-          <div className="mb-6">
-            <Card>
-              <CardContent className="p-0">
-                <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                  {currentLesson.type === "video" ? (
-                    <iframe
-                      className="w-full h-full"
-                      src={currentLesson.videoUrl}
-                      title={currentLesson.title}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
-                  ) : currentLesson.type === "quiz" ? (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center text-white">
-                        <Brain className="w-16 h-16 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">Knowledge Quiz</h3>
-                        <p className="text-white/80">Test your understanding with interactive questions</p>
+          {/* Video Player - Only show for non-quiz lessons */}
+          {currentLesson.type !== "quiz" && (
+            <div className="mb-6">
+              <Card>
+                <CardContent className="p-0">
+                  <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+                    {currentLesson.type === "video" ? (
+                      <iframe
+                        className="w-full h-full"
+                        src={currentLesson.videoUrl}
+                        title={currentLesson.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center text-white">
+                          <BookOpen className="w-16 h-16 mx-auto mb-4" />
+                          <h3 className="text-xl font-semibold mb-2">Project Lesson</h3>
+                          <p className="text-white/80">This is a hands-on project lesson</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center text-white">
-                        <BookOpen className="w-16 h-16 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">Project Lesson</h3>
-                        <p className="text-white/80">This is a hands-on project lesson</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* Lesson Info & Controls */}
           <div className="mb-6">
