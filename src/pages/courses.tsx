@@ -11,6 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Import course images
 import courseProgImg from "@/assets/course-programming.jpg";
@@ -101,11 +109,14 @@ const mockCourses = [
 const categories = ["All", "Programming", "Design", "Marketing", "Business", "Data Science"];
 const levels = ["All Levels", "Beginner", "Intermediate", "Advanced"];
 
+const COURSES_PER_PAGE = 6;
+
 export default function Courses() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedLevel, setSelectedLevel] = useState("All Levels");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredCourses = mockCourses.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,6 +126,24 @@ export default function Courses() {
     
     return matchesSearch && matchesCategory && matchesLevel;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
+  const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
+  const endIndex = startIndex + COURSES_PER_PAGE;
+  const currentCourses = filteredCourses.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (filterType: string, value: string) => {
+    setCurrentPage(1);
+    if (filterType === 'category') {
+      setSelectedCategory(value);
+    } else if (filterType === 'level') {
+      setSelectedLevel(value);
+    } else if (filterType === 'search') {
+      setSearchTerm(value);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-primary-light/10">
@@ -139,14 +168,14 @@ export default function Courses() {
               <Input
                 placeholder="Search courses..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="pl-10 bg-background/50"
               />
             </div>
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select value={selectedCategory} onValueChange={(value) => handleFilterChange('category', value)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -159,7 +188,7 @@ export default function Courses() {
               </SelectContent>
             </Select>
 
-            <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+            <Select value={selectedLevel} onValueChange={(value) => handleFilterChange('level', value)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Level" />
               </SelectTrigger>
@@ -215,10 +244,56 @@ export default function Courses() {
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
           : "space-y-4"
         }>
-          {filteredCourses.map((course) => (
+          {currentCourses.map((course) => (
             <CourseCard key={course.id} {...course} />
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage > 1) setCurrentPage(currentPage - 1);
+                    }}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(page);
+                      }}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                    }}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
 
         {filteredCourses.length === 0 && (
           <div className="text-center py-12">
