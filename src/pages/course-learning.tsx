@@ -25,127 +25,176 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 // Import course images
 import courseProgImg from "@/assets/course-programming.jpg";
 
-const mockCourseData = {
+interface Lesson {
+  id: number;
+  title: string;
+  duration: string;
+  completed: boolean;
+  type: string;
+  videoUrl?: string;
+  description: string;
+  resources: { name: string; type: string; url: string; }[];
+  quiz?: {
+    questions: {
+      id: number;
+      type: string;
+      question: string;
+      options?: string[];
+      correctAnswer: any;
+    }[];
+  };
+}
+
+interface Chapter {
+  id: number;
+  title: string;
+  lessons: Lesson[];
+}
+
+const mockCourseData: {
+  id: string;
+  title: string;
+  instructor: string;
+  chapters: Chapter[];
+} = {
   id: "1",
   title: "Complete Web Development Bootcamp",
   instructor: "Dr. Angela Yu",
-  lessons: [
+  chapters: [
     {
       id: 1,
-      title: "Introduction to Web Development",
-      duration: "15 min",
-      completed: true,
-      type: "video",
-      videoUrl: "https://www.youtube.com/embed/UB1O30fR-EE",
-      description: "Welcome to the course! In this lesson, we'll overview what web development is and what you'll learn.",
-      resources: [
-        { name: "Course Slides", type: "pdf", url: "#" },
-        { name: "Code Examples", type: "zip", url: "#" }
+      title: "Getting Started",
+      lessons: [
+        {
+          id: 1,
+          title: "Introduction to Web Development",
+          duration: "15 min",
+          completed: true,
+          type: "video",
+          videoUrl: "https://www.youtube.com/embed/UB1O30fR-EE",
+          description: "Welcome to the course! In this lesson, we'll overview what web development is and what you'll learn.",
+          resources: [
+            { name: "Course Slides", type: "pdf", url: "#" },
+            { name: "Code Examples", type: "zip", url: "#" }
+          ]
+        },
+        {
+          id: 2,
+          title: "HTML Basics",
+          duration: "45 min",
+          completed: true,
+          type: "video",
+          videoUrl: "https://www.youtube.com/embed/qz0aGYrrlhU",
+          description: "Learn the fundamentals of HTML including tags, elements, and document structure.",
+          resources: [
+            { name: "HTML Reference", type: "pdf", url: "#" },
+            { name: "Practice Files", type: "zip", url: "#" }
+          ]
+        },
+        {
+          id: 3,
+          title: "CSS Fundamentals",
+          duration: "60 min",
+          completed: true,
+          type: "video",
+          videoUrl: "https://www.youtube.com/embed/1Rs2ND1ryYc",
+          description: "Master CSS styling, selectors, properties, and responsive design principles.",
+          resources: [
+            { name: "CSS Cheat Sheet", type: "pdf", url: "#" }
+          ]
+        }
       ]
     },
     {
       id: 2,
-      title: "HTML Basics",
-      duration: "45 min",
-      completed: true,
-      type: "video",
-      videoUrl: "https://www.youtube.com/embed/qz0aGYrrlhU",
-      description: "Learn the fundamentals of HTML including tags, elements, and document structure.",
-      resources: [
-        { name: "HTML Reference", type: "pdf", url: "#" },
-        { name: "Practice Files", type: "zip", url: "#" }
+      title: "JavaScript Fundamentals",
+      lessons: [
+        {
+          id: 4,
+          title: "JavaScript Introduction",
+          duration: "90 min",
+          completed: false,
+          type: "video",
+          videoUrl: "https://www.youtube.com/embed/PkZNo7MFNFg",
+          description: "Dive into JavaScript programming with variables, functions, and basic concepts.",
+          resources: [
+            { name: "JavaScript Guide", type: "pdf", url: "#" },
+            { name: "Exercise Files", type: "zip", url: "#" }
+          ]
+        },
+        {
+          id: 5,
+          title: "DOM Manipulation",
+          duration: "75 min",
+          completed: false,
+          type: "video",
+          videoUrl: "https://www.youtube.com/embed/0ik6X4DJKCc",
+          description: "Learn how to interact with web pages using JavaScript DOM manipulation.",
+          resources: []
+        },
+        {
+          id: 6,
+          title: "JavaScript Quiz",
+          duration: "20 min",
+          completed: false,
+          type: "quiz",
+          description: "Test your JavaScript knowledge with this interactive quiz.",
+          resources: [],
+          quiz: {
+            questions: [
+              {
+                id: 1,
+                type: "multiple_choice",
+                question: "What is the correct way to declare a variable in JavaScript?",
+                options: ["var myVar;", "variable myVar;", "v myVar;", "declare myVar;"],
+                correctAnswer: 0
+              },
+              {
+                id: 2,
+                type: "multiple_choice",
+                question: "Which method is used to add an element to the end of an array?",
+                options: ["append()", "push()", "add()", "insert()"],
+                correctAnswer: 1
+              },
+              {
+                id: 3,
+                type: "true_false",
+                question: "JavaScript is a compiled programming language.",
+                correctAnswer: false
+              },
+              {
+                id: 4,
+                type: "short_answer",
+                question: "What does 'DOM' stand for? (Write the full form)",
+                correctAnswer: "Document Object Model"
+              },
+              {
+                id: 5,
+                type: "true_false",
+                question: "Variables declared with 'let' can be redeclared in the same scope.",
+                correctAnswer: false
+              }
+            ]
+          }
+        }
       ]
     },
     {
       id: 3,
-      title: "CSS Fundamentals",
-      duration: "60 min",
-      completed: true,
-      type: "video",
-      videoUrl: "https://www.youtube.com/embed/1Rs2ND1ryYc",
-      description: "Master CSS styling, selectors, properties, and responsive design principles.",
-      resources: [
-        { name: "CSS Cheat Sheet", type: "pdf", url: "#" }
-      ]
-    },
-    {
-      id: 4,
-      title: "JavaScript Introduction",
-      duration: "90 min",
-      completed: false,
-      type: "video",
-      videoUrl: "https://www.youtube.com/embed/PkZNo7MFNFg",
-      description: "Dive into JavaScript programming with variables, functions, and basic concepts.",
-      resources: [
-        { name: "JavaScript Guide", type: "pdf", url: "#" },
-        { name: "Exercise Files", type: "zip", url: "#" }
-      ]
-    },
-    {
-      id: 5,
-      title: "DOM Manipulation",
-      duration: "75 min",
-      completed: false,
-      type: "video",
-      videoUrl: "https://www.youtube.com/embed/0ik6X4DJKCc",
-      description: "Learn how to interact with web pages using JavaScript DOM manipulation.",
-      resources: []
-    },
-    {
-      id: 6,
-      title: "JavaScript Quiz",
-      duration: "20 min",
-      completed: false,
-      type: "quiz",
-      description: "Test your JavaScript knowledge with this interactive quiz.",
-      quiz: {
-        questions: [
-          {
-            id: 1,
-            type: "multiple_choice",
-            question: "What is the correct way to declare a variable in JavaScript?",
-            options: ["var myVar;", "variable myVar;", "v myVar;", "declare myVar;"],
-            correctAnswer: 0
-          },
-          {
-            id: 2,
-            type: "multiple_choice",
-            question: "Which method is used to add an element to the end of an array?",
-            options: ["append()", "push()", "add()", "insert()"],
-            correctAnswer: 1
-          },
-          {
-            id: 3,
-            type: "true_false",
-            question: "JavaScript is a compiled programming language.",
-            correctAnswer: false
-          },
-          {
-            id: 4,
-            type: "short_answer",
-            question: "What does 'DOM' stand for? (Write the full form)",
-            correctAnswer: "Document Object Model"
-          },
-          {
-            id: 5,
-            type: "true_false",
-            question: "Variables declared with 'let' can be redeclared in the same scope.",
-            correctAnswer: false
-          }
-        ]
-      },
-      resources: []
-    },
-    {
-      id: 7,
-      title: "Project: Todo App",
-      duration: "120 min",
-      completed: false,
-      type: "project",
-      description: "Build a complete todo application using HTML, CSS, and JavaScript.",
-      resources: [
-        { name: "Project Requirements", type: "pdf", url: "#" },
-        { name: "Starter Files", type: "zip", url: "#" }
+      title: "Hands-on Projects",
+      lessons: [
+        {
+          id: 7,
+          title: "Project: Todo App",
+          duration: "120 min",
+          completed: false,
+          type: "project",
+          description: "Build a complete todo application using HTML, CSS, and JavaScript.",
+          resources: [
+            { name: "Project Requirements", type: "pdf", url: "#" },
+            { name: "Starter Files", type: "zip", url: "#" }
+          ]
+        }
       ]
     }
   ]
@@ -157,32 +206,33 @@ export default function CourseLearning() {
     lessonId ? parseInt(lessonId) : 1
   );
   const [notes, setNotes] = useState("");
-  const [expandedSections, setExpandedSections] = useState<number[]>([1]);
+  const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: any }>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   const course = mockCourseData;
-  const currentLesson = course.lessons.find(lesson => lesson.id === currentLessonId);
+  const allLessons: Lesson[] = course.chapters?.flatMap(chapter => chapter.lessons) || [];
+  const currentLesson = allLessons.find(lesson => lesson.id === currentLessonId);
   
   if (!currentLesson) {
     return <div>Lesson not found</div>;
   }
 
-  const completedLessons = course.lessons.filter(lesson => lesson.completed).length;
-  const totalLessons = course.lessons.length;
+  const completedLessons = allLessons.filter(lesson => lesson.completed).length;
+  const totalLessons = allLessons.length;
   const overallProgress = (completedLessons / totalLessons) * 100;
 
   const handleNextLesson = () => {
-    const currentIndex = course.lessons.findIndex(lesson => lesson.id === currentLessonId);
-    if (currentIndex < course.lessons.length - 1) {
-      setCurrentLessonId(course.lessons[currentIndex + 1].id);
+    const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
+    if (currentIndex < allLessons.length - 1) {
+      setCurrentLessonId(allLessons[currentIndex + 1].id);
     }
   };
 
   const handlePreviousLesson = () => {
-    const currentIndex = course.lessons.findIndex(lesson => lesson.id === currentLessonId);
+    const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
     if (currentIndex > 0) {
-      setCurrentLessonId(course.lessons[currentIndex - 1].id);
+      setCurrentLessonId(allLessons[currentIndex - 1].id);
     }
   };
 
@@ -569,42 +619,68 @@ export default function CourseLearning() {
             <h3 className="font-semibold mb-4">Course Content</h3>
             
             <div className="space-y-2">
-              <Collapsible
-                open={expandedSections.includes(1)}
-                onOpenChange={() => toggleSection(1)}
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-2 hover:bg-accent rounded-lg">
-                  <span className="font-medium">Getting Started</span>
-                  <ChevronDown className="w-4 h-4" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-1 ml-4">
-                  {course.lessons.map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                        lesson.id === currentLessonId 
-                          ? 'bg-primary/10 text-primary' 
-                          : 'hover:bg-accent'
-                      }`}
-                      onClick={() => setCurrentLessonId(lesson.id)}
-                    >
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full border">
-                        {lesson.completed ? (
-                          <CheckCircle className="w-4 h-4 text-success" />
-                        ) : lesson.id === currentLessonId ? (
-                          <Play className="w-3 h-3" />
-                        ) : (
-                          <span className="text-xs">{lesson.id}</span>
-                        )}
+              {course.chapters?.map((chapter) => {
+                const chapterLessons = chapter.lessons || [];
+                const completedInChapter = chapterLessons.filter(lesson => lesson.completed).length;
+                
+                return (
+                  <Collapsible
+                    key={chapter.id}
+                    open={expandedSections.includes(chapter.id)}
+                    onOpenChange={() => toggleSection(chapter.id)}
+                  >
+                    <CollapsibleTrigger className="flex items-center justify-between w-full p-3 hover:bg-accent rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                          {chapter.id}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">{chapter.title}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {completedInChapter}/{chapterLessons.length} lessons completed
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{lesson.title}</p>
-                        <p className="text-xs text-muted-foreground">{lesson.duration}</p>
-                      </div>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.includes(chapter.id) ? 'rotate-180' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-1 ml-11">
+                      {chapterLessons.map((lesson, lessonIndex) => (
+                        <div
+                          key={lesson.id}
+                          className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                            lesson.id === currentLessonId 
+                              ? 'bg-primary/10 text-primary border border-primary/20' 
+                              : lesson.completed
+                                ? 'bg-success/5 border border-success/20'
+                                : 'hover:bg-accent'
+                          }`}
+                          onClick={() => setCurrentLessonId(lesson.id)}
+                        >
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full border">
+                            {lesson.completed ? (
+                              <CheckCircle className="w-4 h-4 text-success" />
+                            ) : lesson.id === currentLessonId ? (
+                              <Play className="w-3 h-3" />
+                            ) : (
+                              <span className="text-xs">{lessonIndex + 1}</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{lesson.title}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Clock className="w-3 h-3" />
+                              <span>{lesson.duration}</span>
+                              <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              }) || null}
             </div>
           </div>
         </div>
