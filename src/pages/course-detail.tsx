@@ -177,8 +177,8 @@ export default function CourseDetail() {
     );
   }
 
-  // Calculate lessons from chapters
-  const allLessons = course.chapters.flatMap(chapter => chapter.lessons);
+  // Calculate lessons from chapters with safety checks
+  const allLessons = course.chapters?.flatMap(chapter => chapter.lessons) || [];
   const completedLessons = allLessons.filter(lesson => lesson.completed).length;
   const totalLessons = allLessons.length;
 
@@ -354,13 +354,13 @@ export default function CourseDetail() {
               <CardHeader>
                 <CardTitle>Course Content</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {course.chapters.length} chapters • {totalLessons} lessons • {course.duration} total length
+                  {course.chapters?.length || 0} chapters • {totalLessons} lessons • {course.duration} total length
                 </p>
               </CardHeader>
               <CardContent>
                 <Accordion type="multiple" className="w-full">
-                  {course.chapters.map((chapter) => {
-                    const chapterLessons = chapter.lessons;
+                  {course.chapters?.map((chapter) => {
+                    const chapterLessons = chapter.lessons || [];
                     const completedInChapter = chapterLessons.filter(lesson => lesson.completed).length;
                     
                     return (
@@ -427,7 +427,7 @@ export default function CourseDetail() {
                         </AccordionContent>
                       </AccordionItem>
                     );
-                  })}
+                  }) || null}
                 </Accordion>
               </CardContent>
             </Card>
