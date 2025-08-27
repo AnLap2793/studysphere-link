@@ -11,7 +11,8 @@ import {
   Settings,
   ChevronDown,
   ChevronRight,
-  Brain
+  Brain,
+  Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -209,9 +210,12 @@ export default function CourseLearning() {
   const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: any }>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [courseLessons, setCourseLessons] = useState<Lesson[]>(() => 
+    mockCourseData.chapters?.flatMap(chapter => chapter.lessons) || []
+  );
 
   const course = mockCourseData;
-  const allLessons: Lesson[] = course.chapters?.flatMap(chapter => chapter.lessons) || [];
+  const allLessons = courseLessons;
   const currentLesson = allLessons.find(lesson => lesson.id === currentLessonId);
   
   if (!currentLesson) {
@@ -222,8 +226,39 @@ export default function CourseLearning() {
   const totalLessons = allLessons.length;
   const overallProgress = (completedLessons / totalLessons) * 100;
 
+  // Check if a lesson is unlocked (previous lessons must be completed)
+  const isLessonUnlocked = (lessonId: number): boolean => {
+    const lessonIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
+    if (lessonIndex === 0) return true; // First lesson is always unlocked
+    
+    // Check if all previous lessons are completed
+    for (let i = 0; i < lessonIndex; i++) {
+      if (!allLessons[i].completed) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const markLessonComplete = (lessonId: number) => {
+    setCourseLessons(prev => 
+      prev.map(lesson => 
+        lesson.id === lessonId 
+          ? { ...lesson, completed: true }
+          : lesson
+      )
+    );
+  };
+
   const handleNextLesson = () => {
     const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
+    
+    // Mark current lesson as complete if not already
+    if (!currentLesson.completed) {
+      markLessonComplete(currentLessonId);
+    }
+    
+    // Move to next lesson if available
     if (currentIndex < allLessons.length - 1) {
       setCurrentLessonId(allLessons[currentIndex + 1].id);
     }
@@ -233,6 +268,12 @@ export default function CourseLearning() {
     const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
     if (currentIndex > 0) {
       setCurrentLessonId(allLessons[currentIndex - 1].id);
+    }
+  };
+
+  const handleLessonSelect = (lessonId: number) => {
+    if (isLessonUnlocked(lessonId)) {
+      setCurrentLessonId(lessonId);
     }
   };
 
@@ -332,7 +373,13 @@ export default function CourseLearning() {
                 >
                   Previous
                 </Button>
-                <Button onClick={handleNextLesson}>
+                <Button 
+                  onClick={handleNextLesson}
+                  disabled={(() => {
+                    const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
+                    return currentIndex >= allLessons.length - 1;
+                  })()}
+                >
                   {currentLesson.completed ? "Next Lesson" : "Mark Complete & Next"}
                   <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -644,39 +691,50 @@ export default function CourseLearning() {
                       <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.includes(chapter.id) ? 'rotate-180' : ''}`} />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-1 ml-11">
-                      {chapterLessons.map((lesson, lessonIndex) => (
-                        <div
-                          key={lesson.id}
-                          className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                            lesson.id === currentLessonId 
-                              ? 'bg-primary/10 text-primary border border-primary/20' 
-                              : lesson.completed
-                                ? 'bg-success/5 border border-success/20'
-                                : 'hover:bg-accent'
-                          }`}
-                          onClick={() => setCurrentLessonId(lesson.id)}
-                        >
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full border">
-                            {lesson.completed ? (
-                              <CheckCircle className="w-4 h-4 text-success" />
-                            ) : lesson.id === currentLessonId ? (
-                              <Play className="w-3 h-3" />
-                            ) : (
-                              <span className="text-xs">{lessonIndex + 1}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{lesson.title}</p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Clock className="w-3 h-3" />
-                              <span>{lesson.duration}</span>
-                              <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                                {lesson.type}
-                              </Badge>
+                      {chapterLessons.map((lesson, lessonIndex) => {
+                        const isUnlocked = isLessonUnlocked(lesson.id);
+                        
+                        return (
+                          <div
+                            key={lesson.id}
+                            className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                              !isUnlocked 
+                                ? 'opacity-50 cursor-not-allowed'
+                                : lesson.id === currentLessonId 
+                                  ? 'bg-primary/10 text-primary border border-primary/20 cursor-pointer' 
+                                  : lesson.completed
+                                    ? 'bg-success/5 border border-success/20 cursor-pointer hover:bg-success/10'
+                                    : 'hover:bg-accent cursor-pointer'
+                            }`}
+                            onClick={() => handleLessonSelect(lesson.id)}
+                          >
+                            <div className="flex items-center justify-center w-6 h-6 rounded-full border">
+                              {!isUnlocked ? (
+                                <Lock className="w-4 h-4 text-muted-foreground" />
+                              ) : lesson.completed ? (
+                                <CheckCircle className="w-4 h-4 text-success" />
+                              ) : lesson.id === currentLessonId ? (
+                                <Play className="w-3 h-3" />
+                              ) : (
+                                <span className="text-xs">{lessonIndex + 1}</span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{lesson.title}</p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <Clock className="w-3 h-3" />
+                                <span>{lesson.duration}</span>
+                                <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                  {lesson.type}
+                                </Badge>
+                                {!isUnlocked && (
+                                  <span className="text-xs text-muted-foreground">Locked</span>
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </CollapsibleContent>
                   </Collapsible>
                 );
