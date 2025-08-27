@@ -10,13 +10,15 @@ import {
   Award,
   ArrowLeft,
   Download,
-  MessageCircle
+  MessageCircle,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseComments } from "@/components/course/course-comments";
 import { CourseRating } from "@/components/course/course-rating";
@@ -44,48 +46,100 @@ const mockCourseData = {
     category: "Programming",
     enrolled: true,
     progress: 35,
-    lessons: [
+    chapters: [
       {
         id: 1,
-        title: "Introduction to Web Development",
-        duration: "15 min",
-        completed: true,
-        type: "video"
+        title: "Getting Started with Web Development",
+        lessons: [
+          {
+            id: 1,
+            title: "Introduction to Web Development",
+            duration: "15 min",
+            completed: true,
+            type: "video"
+          },
+          {
+            id: 2,
+            title: "Setting up Development Environment",
+            duration: "20 min",
+            completed: true,
+            type: "video"
+          }
+        ]
       },
       {
         id: 2,
-        title: "HTML Basics",
-        duration: "45 min",
-        completed: true,
-        type: "video"
+        title: "HTML & CSS Fundamentals",
+        lessons: [
+          {
+            id: 3,
+            title: "HTML Basics",
+            duration: "45 min",
+            completed: true,
+            type: "video"
+          },
+          {
+            id: 4,
+            title: "CSS Fundamentals",
+            duration: "60 min",
+            completed: true,
+            type: "video"
+          },
+          {
+            id: 5,
+            title: "Responsive Design",
+            duration: "50 min",
+            completed: false,
+            type: "video"
+          }
+        ]
       },
       {
         id: 3,
-        title: "CSS Fundamentals",
-        duration: "60 min",
-        completed: true,
-        type: "video"
+        title: "JavaScript Programming",
+        lessons: [
+          {
+            id: 6,
+            title: "JavaScript Introduction",
+            duration: "90 min",
+            completed: false,
+            type: "video"
+          },
+          {
+            id: 7,
+            title: "DOM Manipulation",
+            duration: "75 min",
+            completed: false,
+            type: "video"
+          },
+          {
+            id: 8,
+            title: "Event Handling",
+            duration: "60 min",
+            completed: false,
+            type: "video"
+          }
+        ]
       },
       {
         id: 4,
-        title: "JavaScript Introduction",
-        duration: "90 min",
-        completed: false,
-        type: "video"
-      },
-      {
-        id: 5,
-        title: "DOM Manipulation",
-        duration: "75 min",
-        completed: false,
-        type: "video"
-      },
-      {
-        id: 6,
-        title: "Project: Todo App",
-        duration: "120 min",
-        completed: false,
-        type: "project"
+        title: "Building Real Projects",
+        lessons: [
+          {
+            id: 9,
+            title: "Project: Todo App",
+            duration: "120 min",
+            completed: false,
+            type: "project"
+          },
+          {
+            id: 10,
+            title: "Project: Weather App",
+            duration: "150 min",
+            completed: false,
+            type: "project"
+          }
+        ]
       }
     ],
     whatYouWillLearn: [
@@ -123,8 +177,10 @@ export default function CourseDetail() {
     );
   }
 
-  const completedLessons = course.lessons.filter(lesson => lesson.completed).length;
-  const totalLessons = course.lessons.length;
+  // Calculate lessons from chapters
+  const allLessons = course.chapters.flatMap(chapter => chapter.lessons);
+  const completedLessons = allLessons.filter(lesson => lesson.completed).length;
+  const totalLessons = allLessons.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-primary-light/10">
@@ -298,53 +354,81 @@ export default function CourseDetail() {
               <CardHeader>
                 <CardTitle>Course Content</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {totalLessons} lessons • {course.duration} total length
+                  {course.chapters.length} chapters • {totalLessons} lessons • {course.duration} total length
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  {course.lessons.map((lesson, index) => (
-                    <div
-                      key={lesson.id}
-                      className={`flex items-center justify-between p-4 rounded-lg border transition-colors cursor-pointer ${
-                        lesson.completed 
-                          ? 'bg-success/5 border-success/20' 
-                          : course.enrolled 
-                            ? 'hover:bg-accent/50' 
-                            : 'opacity-60'
-                      }`}
-                      onClick={() => course.enrolled && setActiveLesson(lesson.id)}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-background border">
-                          {lesson.completed ? (
-                            <CheckCircle className="w-4 h-4 text-success" />
-                          ) : (
-                            <span className="text-sm font-medium">{index + 1}</span>
-                          )}
-                        </div>
-                        <div>
-                          <h4 className="font-medium">{lesson.title}</h4>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Play className="w-3 h-3" />
-                            <span>{lesson.duration}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {lesson.type}
-                            </Badge>
+                <Accordion type="multiple" className="w-full">
+                  {course.chapters.map((chapter) => {
+                    const chapterLessons = chapter.lessons;
+                    const completedInChapter = chapterLessons.filter(lesson => lesson.completed).length;
+                    
+                    return (
+                      <AccordionItem key={chapter.id} value={`chapter-${chapter.id}`}>
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center justify-between w-full mr-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                                {chapter.id}
+                              </div>
+                              <div className="text-left">
+                                <h4 className="font-medium">{chapter.title}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {completedInChapter}/{chapterLessons.length} lessons completed
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      
-                      {course.enrolled && (
-                        <Link to={`/course/${course.id}/learn/${lesson.id}`}>
-                          <Button variant="ghost" size="sm">
-                            {lesson.completed ? "Review" : "Start"}
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2 ml-11">
+                            {chapterLessons.map((lesson, lessonIndex) => (
+                              <div
+                                key={lesson.id}
+                                className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${
+                                  lesson.completed 
+                                    ? 'bg-success/5 border-success/20' 
+                                    : course.enrolled 
+                                      ? 'hover:bg-accent/50' 
+                                      : 'opacity-60'
+                                }`}
+                                onClick={() => course.enrolled && setActiveLesson(lesson.id)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-background border">
+                                    {lesson.completed ? (
+                                      <CheckCircle className="w-3 h-3 text-success" />
+                                    ) : (
+                                      <span className="text-xs font-medium">{lessonIndex + 1}</span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h5 className="font-medium text-sm">{lesson.title}</h5>
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                      <Play className="w-3 h-3" />
+                                      <span>{lesson.duration}</span>
+                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                                        {lesson.type}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {course.enrolled && (
+                                  <Link to={`/course/${course.id}/learn/${lesson.id}`}>
+                                    <Button variant="ghost" size="sm" className="text-xs">
+                                      {lesson.completed ? "Review" : "Start"}
+                                    </Button>
+                                  </Link>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
               </CardContent>
             </Card>
           </TabsContent>
