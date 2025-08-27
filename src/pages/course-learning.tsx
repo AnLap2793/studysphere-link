@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Play, 
   CheckCircle,
@@ -203,6 +204,7 @@ const mockCourseData: {
 
 export default function CourseLearning() {
   const { courseId, lessonId } = useParams();
+  const { toast } = useToast();
   const [currentLessonId, setCurrentLessonId] = useState<number>(
     lessonId ? parseInt(lessonId) : 1
   );
@@ -252,10 +254,20 @@ export default function CourseLearning() {
 
   const handleNextLesson = () => {
     const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLessonId);
+    const isLastLesson = currentIndex === allLessons.length - 1;
     
     // Mark current lesson as complete if not already
     if (!currentLesson.completed) {
       markLessonComplete(currentLessonId);
+      
+      // If this is the last lesson, show course completion message
+      if (isLastLesson) {
+        toast({
+          title: "🎉 Chúc mừng!",
+          description: "Bạn đã hoàn thành khóa học thành công!",
+        });
+        return;
+      }
     }
     
     // Move to next lesson if available
