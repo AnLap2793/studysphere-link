@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
   Play, 
@@ -18,10 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseComments } from "@/components/course/course-comments";
 import { CourseRating } from "@/components/course/course-rating";
+import { CourseCurriculum } from "@/components/course/course-curriculum";
 
 // Import course images
 import courseProgImg from "@/assets/course-programming.jpg";
@@ -160,7 +159,6 @@ const mockCourseData = {
 
 export default function CourseDetail() {
   const { courseId } = useParams();
-  const [activeLesson, setActiveLesson] = useState<number | null>(null);
   
   const course = courseId ? mockCourseData[courseId as keyof typeof mockCourseData] : null;
 
@@ -350,87 +348,13 @@ export default function CourseDetail() {
           </TabsContent>
           
           <TabsContent value="curriculum">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Content</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {course.chapters?.length || 0} chapters • {totalLessons} lessons • {course.duration} total length
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Accordion type="multiple" className="w-full">
-                  {course.chapters?.map((chapter) => {
-                    const chapterLessons = chapter.lessons || [];
-                    const completedInChapter = chapterLessons.filter(lesson => lesson.completed).length;
-                    
-                    return (
-                      <AccordionItem key={chapter.id} value={`chapter-${chapter.id}`}>
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center justify-between w-full mr-4">
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                                {chapter.id}
-                              </div>
-                              <div className="text-left">
-                                <h4 className="font-medium">{chapter.title}</h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {completedInChapter}/{chapterLessons.length} lessons completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="space-y-2 ml-11">
-                            {chapterLessons.map((lesson, lessonIndex) => (
-                              <div
-                                key={lesson.id}
-                                className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${
-                                  lesson.completed 
-                                    ? 'bg-success/5 border-success/20' 
-                                    : course.enrolled 
-                                      ? 'hover:bg-accent/50' 
-                                      : 'opacity-60'
-                                }`}
-                                onClick={() => course.enrolled && setActiveLesson(lesson.id)}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-background border">
-                                    {lesson.completed ? (
-                                      <CheckCircle className="w-3 h-3 text-success" />
-                                    ) : (
-                                      <span className="text-xs font-medium">{lessonIndex + 1}</span>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <h5 className="font-medium text-sm">{lesson.title}</h5>
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                      <Play className="w-3 h-3" />
-                                      <span>{lesson.duration}</span>
-                                      <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                                        {lesson.type}
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                {course.enrolled && (
-                                  <Link to={`/course/${course.id}/learn/${lesson.id}`}>
-                                    <Button variant="ghost" size="sm" className="text-xs">
-                                      {lesson.completed ? "Review" : "Start"}
-                                    </Button>
-                                  </Link>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    );
-                  }) || null}
-                </Accordion>
-              </CardContent>
-            </Card>
+            <CourseCurriculum 
+              chapters={course.chapters || []}
+              totalLessons={totalLessons}
+              courseDuration={course.duration}
+              courseId={course.id}
+              enrolled={course.enrolled}
+            />
           </TabsContent>
           
           <TabsContent value="instructor">
