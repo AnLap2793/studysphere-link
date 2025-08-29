@@ -25,27 +25,30 @@ function App() {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="min-h-screen bg-background">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/course/:courseId" element={<CourseDetail />} />
-                <Route path="/course/:courseId/learn" element={<CourseLearning />} />
-                <Route path="/course/:courseId/learn/:lessonId" element={<CourseLearning />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/profile" element={<Profile />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminDashboard />} />
-                  <Route path="users" element={<AdminUsers />} />
-                </Route>
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
+            <Routes>
+              {/* User Routes with Navbar */}
+              <Route path="/*" element={
+                <div className="min-h-screen bg-background">
+                  <Navbar />
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/courses" element={<Courses />} />
+                    <Route path="/course/:courseId" element={<CourseDetail />} />
+                    <Route path="/course/:courseId/learn" element={<CourseLearning />} />
+                    <Route path="/course/:courseId/learn/:lessonId" element={<CourseLearning />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
+              } />
+              
+              {/* Admin Routes without Navbar */}
+              <Route path="/admin/*" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={<AdminUsers />} />
+              </Route>
+            </Routes>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
