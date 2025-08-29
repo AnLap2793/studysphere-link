@@ -13,6 +13,9 @@ import CourseLearning from "./pages/course-learning";
 import Dashboard from "./pages/dashboard";
 import Profile from "./pages/profile";
 import NotFound from "./pages/NotFound";
+import { AdminLayout } from "./layouts/admin-layout";
+import AdminDashboard from "./pages/admin/dashboard";
+import AdminUsers from "./pages/admin/users";
 
 function App() {
   return (
@@ -32,6 +35,13 @@ function App() {
                 <Route path="/course/:courseId/learn/:lessonId" element={<CourseLearning />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<AdminUsers />} />
+                </Route>
+                
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
