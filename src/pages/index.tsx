@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, Users, Award, Star, Play, Check } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -90,6 +91,22 @@ const benefits = [
 ];
 
 const Index = () => {
+  const heroSlides = [
+    "Kiến thức là sức mạnh",
+    "Học hôm nay, dẫn đầu ngày mai", 
+    "Học để cùng nhau phát triển"
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 3000); // Chuyển slide mỗi 3 giây
+
+    return () => clearInterval(interval);
+  }, [heroSlides.length]);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -100,18 +117,13 @@ const Index = () => {
               🚀 New courses every week
             </Badge>
             
-            <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-              Learn{" "}
-              <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                without limits
-              </span>{" "}
-              with our online courses
-            </h1>
-            
-            <p className="text-lg text-muted-foreground max-w-md">
-              Build skills with courses, certificates, and degrees online from world-class 
-              universities and companies.
-            </p>
+            <div className="min-h-[120px] lg:min-h-[160px] flex items-center">
+              <h1 key={currentSlide} className="text-4xl lg:text-6xl font-bold leading-tight animate-fade-in">
+                <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
+                  {heroSlides[currentSlide]}
+                </span>
+              </h1>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/courses">
