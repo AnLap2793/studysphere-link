@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import certificateTemplate from "@/assets/certificate-template.jpg";
 
 interface CertificateGeneratorProps {
   studentName: string;
@@ -36,90 +37,99 @@ export const CertificateGenerator = ({
     canvas.width = 800;
     canvas.height = 600;
 
-    // Background gradient
-    const gradient = ctx.createLinearGradient(0, 0, 800, 600);
-    gradient.addColorStop(0, '#f8fafc');
-    gradient.addColorStop(1, '#e2e8f0');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 800, 600);
+    // Load the certificate template image
+    const templateImage = new Image();
+    templateImage.crossOrigin = 'anonymous';
+    templateImage.onload = () => {
+      // Draw the template image as background
+      ctx.drawImage(templateImage, 0, 0, 800, 600);
 
-    // Border
-    ctx.strokeStyle = 'hsl(var(--primary))';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(20, 20, 760, 560);
+      // Add text overlays
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
-    // Inner border
-    ctx.strokeStyle = 'hsl(var(--primary))';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(40, 40, 720, 520);
+      // Title
+      ctx.fillStyle = '#2c5530';
+      ctx.font = 'bold 36px serif';
+      ctx.fillText('CHỨNG CHỈ HOÀN THÀNH', 400, 180);
+      
+      ctx.font = 'italic 20px serif';
+      ctx.fillText('Certificate of Completion', 400, 210);
 
-    // Decorative elements
-    ctx.fillStyle = 'hsl(var(--primary) / 0.1)';
-    ctx.beginPath();
-    ctx.arc(100, 100, 40, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    ctx.beginPath();
-    ctx.arc(700, 100, 40, 0, 2 * Math.PI);
-    ctx.fill();
+      // Student name
+      ctx.fillStyle = '#1a4d1f';
+      ctx.font = 'bold 32px serif';
+      ctx.fillText(studentName, 400, 280);
 
-    ctx.beginPath();
-    ctx.arc(100, 500, 40, 0, 2 * Math.PI);
-    ctx.fill();
+      // Course details
+      ctx.font = '18px sans-serif';
+      ctx.fillStyle = '#333333';
+      ctx.fillText('đã hoàn thành xuất sắc khóa học', 400, 320);
+      
+      ctx.font = 'bold 24px sans-serif';
+      ctx.fillStyle = '#2c5530';
+      ctx.fillText(`"${courseName}"`, 400, 360);
 
-    ctx.beginPath();
-    ctx.arc(700, 500, 40, 0, 2 * Math.PI);
-    ctx.fill();
+      // Instructor
+      ctx.fillStyle = '#333333';
+      ctx.font = '16px sans-serif';
+      ctx.fillText(`Giảng viên: ${instructorName}`, 400, 400);
 
-    // Title
-    ctx.fillStyle = 'hsl(var(--primary))';
-    ctx.font = 'bold 48px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('CHỨNG CHỈ', 400, 150);
-    
-    ctx.font = 'italic 24px serif';
-    ctx.fillText('Hoàn thành khóa học', 400, 180);
+      // Date
+      ctx.font = '16px sans-serif';
+      ctx.fillText(`Ngày hoàn thành: ${completionDate}`, 400, 430);
 
-    // Student name
-    ctx.fillStyle = 'hsl(var(--foreground))';
-    ctx.font = 'bold 36px serif';
-    ctx.fillText(studentName, 400, 260);
+      // Signature area
+      ctx.fillStyle = '#666666';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Chữ ký giảng viên', 600, 500);
 
-    // Course details
-    ctx.font = '20px sans-serif';
-    ctx.fillText('đã hoàn thành xuất sắc khóa học', 400, 300);
-    
-    ctx.font = 'bold 28px sans-serif';
-    ctx.fillStyle = 'hsl(var(--primary))';
-    ctx.fillText(`"${courseName}"`, 400, 340);
+      setCertificateGenerated(true);
+    };
 
-    // Instructor
-    ctx.fillStyle = 'hsl(var(--foreground))';
-    ctx.font = '18px sans-serif';
-    ctx.fillText(`Giảng viên: ${instructorName}`, 400, 380);
+    templateImage.onerror = () => {
+      // Fallback: create a simple background if image fails to load
+      const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+      gradient.addColorStop(0, '#f8fafc');
+      gradient.addColorStop(1, '#e2e8f0');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 800, 600);
 
-    // Date
-    ctx.font = '16px sans-serif';
-    ctx.fillText(`Ngày hoàn thành: ${completionDate}`, 400, 420);
+      // Simple border
+      ctx.strokeStyle = '#2c5530';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, 760, 560);
 
-    // Signature line
-    ctx.strokeStyle = 'hsl(var(--foreground))';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(520, 480);
-    ctx.lineTo(680, 480);
-    ctx.stroke();
+      // Add text with fallback styling
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      ctx.fillStyle = '#2c5530';
+      ctx.font = 'bold 36px serif';
+      ctx.fillText('CHỨNG CHỈ HOÀN THÀNH', 400, 180);
+      
+      ctx.fillStyle = '#1a4d1f';
+      ctx.font = 'bold 32px serif';
+      ctx.fillText(studentName, 400, 280);
+      
+      ctx.font = '18px sans-serif';
+      ctx.fillStyle = '#333333';
+      ctx.fillText('đã hoàn thành xuất sắc khóa học', 400, 320);
+      
+      ctx.font = 'bold 24px sans-serif';
+      ctx.fillStyle = '#2c5530';
+      ctx.fillText(`"${courseName}"`, 400, 360);
+      
+      ctx.fillStyle = '#333333';
+      ctx.font = '16px sans-serif';
+      ctx.fillText(`Giảng viên: ${instructorName}`, 400, 400);
+      ctx.fillText(`Ngày hoàn thành: ${completionDate}`, 400, 430);
 
-    ctx.font = '14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Chữ ký giảng viên', 600, 500);
+      setCertificateGenerated(true);
+    };
 
-    // Award icon (simple star)
-    ctx.fillStyle = 'hsl(var(--primary))';
-    ctx.font = '40px sans-serif';
-    ctx.fillText('⭐', 200, 480);
-
-    setCertificateGenerated(true);
+    // Try to load the template image
+    templateImage.src = certificateTemplate;
   };
 
   const downloadCertificate = () => {
