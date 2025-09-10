@@ -27,6 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CourseCompletionModal } from "@/components/course-completion-modal";
+import { CourseNotes } from "@/components/course/course-notes";
+import { CourseResources } from "@/components/course/course-resources";
 
 // Import course images
 import courseProgImg from "@/assets/course-programming.jpg";
@@ -212,7 +214,7 @@ export default function CourseLearning() {
   const [currentLessonId, setCurrentLessonId] = useState<number>(
     lessonId ? parseInt(lessonId) : 1
   );
-  const [notes, setNotes] = useState("");
+  
   const [expandedSections, setExpandedSections] = useState<number[]>([1, 2, 3]);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: any }>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
@@ -650,48 +652,11 @@ export default function CourseLearning() {
             )}
             
             <TabsContent value="notes">
-              <Card>
-                <CardHeader>
-                  <CardTitle>My Notes</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Textarea
-                    placeholder="Take notes while you learn..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="min-h-40"
-                  />
-                  <Button className="mt-3">Save Notes</Button>
-                </CardContent>
-              </Card>
+              <CourseNotes lessonId={currentLessonId} />
             </TabsContent>
             
             <TabsContent value="resources">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Downloadable Resources</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {currentLesson.resources && currentLesson.resources.length > 0 ? (
-                    <div className="space-y-3">
-                      {currentLesson.resources.map((resource, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <Download className="w-4 h-4 text-muted-foreground" />
-                            <div>
-                              <p className="font-medium">{resource.name}</p>
-                              <p className="text-sm text-muted-foreground uppercase">{resource.type}</p>
-                            </div>
-                          </div>
-                          <Button variant="outline" size="sm">Download</Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No resources available for this lesson.</p>
-                  )}
-                </CardContent>
-              </Card>
+              <CourseResources resources={currentLesson.resources} />
             </TabsContent>
             
             <TabsContent value="qa">
