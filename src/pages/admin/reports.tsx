@@ -5,7 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { OnlineRateReport } from "@/components/reports/online-rate-report";
 import { StudyTimeReport } from "@/components/reports/study-time-report";
 import { SkillGapReport } from "@/components/reports/skill-gap-report";
-import { CalendarDays, Clock, TrendingUp } from "lucide-react";
+import { EmployeeDetailReport } from "@/components/reports/employee-detail-report";
+import { CalendarDays, Clock, TrendingUp, Users } from "lucide-react";
 
 export default function AdminReports() {
   const [period, setPeriod] = useState("month");
@@ -35,7 +36,7 @@ export default function AdminReports() {
       </div>
 
       <Tabs defaultValue="online-rate" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="online-rate" className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
             Tỷ lệ Online
@@ -47,6 +48,10 @@ export default function AdminReports() {
           <TabsTrigger value="skill-gap" className="flex items-center gap-2">
             <CalendarDays className="w-4 h-4" />
             Kỹ năng thiếu
+          </TabsTrigger>
+          <TabsTrigger value="employee-detail" className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Chi tiết NV
           </TabsTrigger>
         </TabsList>
 
@@ -60,6 +65,10 @@ export default function AdminReports() {
 
         <TabsContent value="skill-gap">
           <SkillGapReport period={period} />
+        </TabsContent>
+
+        <TabsContent value="employee-detail">
+          <EmployeeDetailReport period={period} />
         </TabsContent>
       </Tabs>
     </div>
