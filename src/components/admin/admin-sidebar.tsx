@@ -4,7 +4,8 @@ import {
   BookOpen, 
   Settings,
   ChevronLeft,
-  ChevronRight 
+  ChevronRight,
+  BarChart3 
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -35,6 +36,11 @@ const adminMenuItems = [
     title: "Quản lý khóa học",
     url: "/admin/courses",
     icon: BookOpen,
+  },
+  {
+    title: "Báo cáo & Phân tích",
+    url: "/admin/reports",
+    icon: BarChart3,
   },
   {
     title: "Cài đặt",

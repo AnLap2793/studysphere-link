@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import { AdminLayout } from "./layouts/admin-layout";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminUsers from "./pages/admin/users";
+import AdminReports from "./pages/admin/reports";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
               <Route path="/admin/*" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={<AdminUsers />} />
+                <Route path="reports" element={<AdminReports />} />
               </Route>
             </Routes>
           </BrowserRouter>
